@@ -1,7 +1,7 @@
-export const createJob = async (supabase, jobData) => {
+export const insertApplication = async (supabase, data) => {
     const { data, error } = await supabase
-        .from("job_post")
-        .insert([jobData])        
+        .from("application")
+        .insert([data])        
         .select()
         .single();
 

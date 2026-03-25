@@ -5,7 +5,7 @@ export const createJobService = async (supabase, jobInput) => {
     data: { user },
     error: userError,
   } = await supabase.auth.getUser();
-
+    
   if (userError || !user) {
     throw new Error("Unauthorized");
   }
@@ -25,10 +25,6 @@ export const createJobService = async (supabase, jobInput) => {
     recruiter_id: recruiter.id,
   };
 
-
-  console.log("USER:", user?.id);
-console.log("RECRUITER:", recruiter);
-console.log("JOB DATA:", jobData);
   const job = await createJob(supabase, jobData);
 
   return job;
