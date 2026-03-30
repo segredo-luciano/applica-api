@@ -3,7 +3,7 @@ import * as recruiterRepository from "../repository/recruiter.repository.js";
 
 const publicDomains = ["gmail.com", "outlook.com", "hotmail.com"];
 
-export const register = async ({ name, email, password, company }) => {
+export const register = async ({ name, email, password, company, company_domain }) => {
     if (!email || !password) {
         throw new Error("Email and password are required");
     }
@@ -27,6 +27,7 @@ export const register = async ({ name, email, password, company }) => {
             name,
             email,
             company,
+            company_domain,
             auth_user_id: user.id
         });
     

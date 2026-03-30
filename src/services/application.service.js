@@ -1,26 +1,31 @@
-import { supabaseAdmin } from "../middleware/supabase";
-import { v4 as uuidv4 } from "uuid";
-import { insertApplication } from "../repository/application.repository";
-import { base64ToBuffer, generateFileHash } from "../utils/file.util";
+import { supabaseAdmin } from "../middleware/supabase.js";
+import { insertApplication } from "../repository/application.repository.js";
+import { base64ToBuffer, generateFileHash } from "../utils/file.util.js";
+import { APPLICATION_STATUS } from "../enum/applicationStatus.enum.js";
+import { getJobByCode } from "./job.service.js";
 
-export const applyToJob = async (supabase, input) => {
-    const { job_id, cv_base64 } = input;
-    const { buffer, mime } = base64ToBuffer(cv_base64);
+export const applyToJob = async (supabase, { job_code, file }) => {
+    const job = await getJobByCode(supabase, job_code)
+    if(!job) {
+        throw new Error("Não foi encontrado vaga com o código enviado")
+    }
+    
+    const buffer = file.buffer;
     const cv_hash = generateFileHash(buffer);
-    const cv_url = await uploadCV(buffer, mime);
+    const cv_url = await uploadCV(buffer, file.mimetype, job.id);
 
     const applyObj = {
         cv_hash,
         cv_url,
-        status: "PENDING",
-        job_id: job_id
+        status: APPLICATION_STATUS.PENDING,
+        job_post_id: job.id
     }
 
     return await insertApplication(supabase, applyObj);
 }
 
-const uploadCV = async (buffer, mime) => {
-    const fileName = `${uuidv4()}.pdf`;
+const uploadCV = async (buffer, mime, job_id) => {
+    const fileName = `${job_id}/${Date.now()}.pdf`;
 
     const { error } = await supabaseAdmin.storage
     .from("cvs")

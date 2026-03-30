@@ -12,3 +12,15 @@ export const createJob = async (supabase, jobData) => {
 
     return data;
 };
+
+export const getJobByCodeRepository = async (supabase, code) => {
+    const { data, error } = await supabase
+        .from("job_post")
+        .select("*")
+        .eq("code", code)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    return data;
+}

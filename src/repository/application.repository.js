@@ -1,9 +1,7 @@
-export const insertApplication = async (supabase, data) => {
+export const insertApplication = async (supabase, input) => {
     const { data, error } = await supabase
         .from("application")
-        .insert([data])        
-        .select()
-        .single();
+        .insert([input])        
 
     if(error) {
         console.log("[INSERT ERROR]: ", error);

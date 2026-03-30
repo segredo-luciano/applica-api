@@ -1,4 +1,4 @@
-import { createJob } from "../repository/job.repository.js";
+import { createJob, getJobByCodeRepository } from "../repository/job.repository.js";
 
 export const createJobService = async (supabase, jobInput) => {
   const {
@@ -17,7 +17,7 @@ export const createJobService = async (supabase, jobInput) => {
     .single();
 
   if (recruiterError || !recruiter) {
-    throw new Error("Recruiter not found");
+    throw new Error("Recrutador não identificado");
   }
 
   const jobData = {
@@ -29,3 +29,7 @@ export const createJobService = async (supabase, jobInput) => {
 
   return job;
 };
+
+export const getJobByCode = async (supabase, jobId) => {
+    return getJobByCodeRepository(supabase, jobId);
+}
