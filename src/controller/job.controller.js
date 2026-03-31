@@ -1,4 +1,4 @@
-import { createJobService } from "../services/job.service.js";
+import { createJobService, getJobListFiltered } from "../services/job.service.js";
 
 export const createJobController = async (req, res) => {
     try {
@@ -12,3 +12,32 @@ export const createJobController = async (req, res) => {
         });
     }
 };
+
+export const getJobListFilteredController = async (req, res) => {
+    try {
+        const {
+        title,
+        company,
+        startDate,
+        endDate,
+        order,
+        } = req.query;
+
+        console.log(startDate)
+
+        const filters = {
+        title: title || null,
+        company: company || null,
+        startDate: startDate || null,
+        endDate: endDate || null,
+        order: order || "recent",
+        };
+        const job = await getJobListFiltered(req.supabase, filters);
+
+        return res.status(200).json(job);
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message || "Failed to create job",
+        });
+    }
+}

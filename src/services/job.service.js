@@ -1,4 +1,4 @@
-import { createJob, getJobByCodeRepository } from "../repository/job.repository.js";
+import { createJob, getJobByCodeRepository, getJobsByFilter } from "../repository/job.repository.js";
 
 export const createJobService = async (supabase, jobInput) => {
   const {
@@ -32,4 +32,8 @@ export const createJobService = async (supabase, jobInput) => {
 
 export const getJobByCode = async (supabase, jobId) => {
     return getJobByCodeRepository(supabase, jobId);
+}
+
+export const getJobListFiltered = async (supabase, filter) => {    
+    return getJobsByFilter(supabase, filter)
 }
