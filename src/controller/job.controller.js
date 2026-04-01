@@ -18,19 +18,15 @@ export const getJobListFilteredController = async (req, res) => {
         const {
         title,
         company,
-        startDate,
-        endDate,
-        order,
+        range,        
+        mostRecent,
         } = req.query;
-
-        console.log(startDate)
 
         const filters = {
         title: title || null,
         company: company || null,
-        startDate: startDate || null,
-        endDate: endDate || null,
-        order: order || "recent",
+        range: range || null,
+        mostRecent: mostRecent || true,
         };
         const job = await getJobListFiltered(req.supabase, filters);
 

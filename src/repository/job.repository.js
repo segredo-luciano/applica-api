@@ -28,20 +28,27 @@ export const getJobByCodeRepository = async (supabase, code) => {
 export const getJobsByFilter = async (supabase, filter) => {
     let query = supabase
         .from("job_post")
-        .select("*")
+        .select(`
+            code,
+            created_at,
+            title,
+            description,
+            company, 
+            limit_date,
+            company_domain,
+            recruiter_works_here
+        `, { count: "exact" })
 
-        if(filter.startDate) {
-            const start = new Date(filter.startDate);
-            start.setHours(0, 0, 0, 0);
+        const now = new Date();
 
-            query = query.gte("created_at", start.toISOString());
+        if (filter.range === "day") {
+            const last24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+            query = query.gte("created_at", last24h.toISOString());
         }
 
-        if (filter.endDate) {
-            const end = new Date(filter.endDate);
-            end.setHours(23, 59, 59, 999);
-
-            query = query.lte("created_at", end.toISOString());
+        if (filter.range === "week") {
+            const lastWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+            query = query.gte("created_at", lastWeek.toISOString());
         }
 
         if(filter.companyName) {
@@ -58,9 +65,22 @@ export const getJobsByFilter = async (supabase, filter) => {
         query = query.order("created_at", { ascending: true });
     }
 
-    const { data, error } = await query;
+    const page = filter.page || 1;
+    const limit = filter.limit || 1;
+
+    const from = (page - 1) * limit;
+    const to = from + limit - 1;
+
+    query = query.range(from, to);
+
+    const { data, error, count } = await query;
 
     if (error) throw error;
 
-    return data;
+    return {
+        data,
+        total: count,
+        page,
+        limit
+    };
 }
