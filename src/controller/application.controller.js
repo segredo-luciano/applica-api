@@ -19,9 +19,17 @@ export const applyToJobController = async(req, res) => {
         );
 
         return res.status(201).json(apply);
-    } catch (error) {
-        return res.status(400).json({
-            error: error.message || "Falha ao se aplicar para a vaga",
+    } catch (error) {        
+        if(error.code == 23505 &&
+            error.message?.includes('unique_application')
+        ) {
+            return res.status(409).json({
+                message: "Você já se candidatou para esta vaga.",
+            });
+        }
+
+        return res.status(500).json({
+            message: "Falha ao se aplicar para a vaga"
         });
     }
 }

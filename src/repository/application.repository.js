@@ -5,7 +5,7 @@ export const insertApplication = async (supabase, input) => {
 
     if(error) {
         console.log("[INSERT ERROR]: ", error);
-        throw new Error(error.message);
+        throw error;
     }
 
     return data;

@@ -51,8 +51,8 @@ export const getJobsByFilter = async (supabase, filter) => {
             query = query.gte("created_at", lastWeek.toISOString());
         }
 
-        if(filter.companyName) {
-            query = query.ilike('company_name', `%${filter.companyName}%`)
+        if(filter.company) {
+            query = query.ilike('company', `%${filter.company}%`)
         }
 
         if(filter.title) {
