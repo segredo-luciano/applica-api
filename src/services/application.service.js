@@ -12,16 +12,28 @@ export const applyToJob = async (supabase, { job_code, file }) => {
     
     const buffer = file.buffer;
     const cv_hash = generateFileHash(buffer);
-    const cv_url = await uploadCV(buffer, file.mimetype, job.id);
+    let cv_url = null;
+    
+    try {
+        cv_url = await uploadCV(buffer, file.mimetype, job.id);
+        
+        const applyObj = {
+            cv_hash,
+            cv_url,
+            status: APPLICATION_STATUS.PENDING,
+            job_post_id: job.id
+        }
+    
+        const data = await insertApplication(supabase, applyObj);
+    
+        return data;
+    } catch (error) {
+        if(cv_url) {
+            await deleteCV(cv_url);
+        }
 
-    const applyObj = {
-        cv_hash,
-        cv_url,
-        status: APPLICATION_STATUS.PENDING,
-        job_post_id: job.id
+        throw error;
     }
-
-    return await insertApplication(supabase, applyObj);
 }
 
 const uploadCV = async (buffer, mime, job_id) => {
@@ -40,4 +52,25 @@ const uploadCV = async (buffer, mime, job_id) => {
     .getPublicUrl(fileName);
 
     return data.publicUrl;
+};
+
+const deleteCV = async (cv_url) => {
+    try {
+        const path = cv_url.split("/cvs/")[1];
+
+        if (!path) {
+            throw new Error("Invalid CV URL, cannot extract path");
+        }
+
+        const { error } = await supabaseAdmin.storage
+            .from("cvs")
+            .remove([path]);
+
+        if (error) {
+            throw error;
+        }
+
+    } catch (err) {
+        console.error("Error deleting CV:", err.message);
+    }
 };
