@@ -58,7 +58,7 @@ export const login = async ({ email, password }) => {
     password
   });
 
-  if (error) throw new Error(error.message);
+  if (error) throw new Error(error);
 
   const user = data.user;
   const token = data.session.access_token;

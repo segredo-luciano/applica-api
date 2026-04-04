@@ -1,6 +1,7 @@
 import express from "express";
 import { supabase } from "../config/supabase.js";
-import { createJobController, getJobListFilteredController } from "../controller/job.controller.js";
+import { createJobController, getJobListFilteredController, getJobsByRecruiter } from "../controller/job.controller.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 
@@ -25,5 +26,6 @@ router.get("/", async (req, res) => {
 
 router.post("/register", createJobController);
 router.get('/list', getJobListFilteredController);
+router.get('/list/recruiter', authMiddleware, getJobsByRecruiter);
 
 export default router;

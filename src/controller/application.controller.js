@@ -20,7 +20,7 @@ export const applyToJobController = async(req, res) => {
 
         return res.status(201).json(apply);
     } catch (error) {        
-        if(error.code == 23505 &&
+        if (error.code == 23505 &&
             error.message?.includes('unique_application')
         ) {
             return res.status(409).json({

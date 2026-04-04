@@ -15,6 +15,9 @@ export const loginController = async (req, res) => {
     const result = await authService.login(req.body);
     res.json(result);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    if(err.message?.toLowerCase().includes('invalid login credentials')) {
+          res.status(404).json({ message: 'Usuário ou senha inválidos' });
+    }    
+    res.status(400).json({ message: 'Falha ao fazer login' });
   }
 };

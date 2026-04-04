@@ -1,4 +1,4 @@
-import { createJobService, getJobListFiltered } from "../services/job.service.js";
+import { createJobService, getJobByRecruiter, getJobListFiltered } from "../services/job.service.js";
 
 export const createJobController = async (req, res) => {
     try {
@@ -12,6 +12,33 @@ export const createJobController = async (req, res) => {
         });
     }
 };
+
+export const getJobsByRecruiter = async (req, res) => {
+    try {
+        const {
+        title,
+        company,
+        range,        
+        mostRecent,
+        } = req.query;
+
+        const filters = {
+        title: title || null,
+        company: company || null,
+        range: range || null,
+        mostRecent: mostRecent || true,
+        };
+
+        const user = req.user; 
+        const jobs = await getJobByRecruiter(req.supabase, filters, user.id);
+
+        return res.status(200).json(jobs);
+    } catch (error) {
+        return res.status(500).json({
+            message: "Falha ao listar"
+        });
+    }
+}
 
 export const getJobListFilteredController = async (req, res) => {
     try {

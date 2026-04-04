@@ -58,6 +58,10 @@ export const getJobsByFilter = async (supabase, filter) => {
         if(filter.title) {
             query = query.ilike('title', `%${filter.title}%`)
         }
+
+        if(filter.recruiterId) {
+            query = query.eq('recruiter_id', filter.recruiterId)
+        }
         
     if (filter.mostRecent) {
         query = query.order("created_at", { ascending: false });

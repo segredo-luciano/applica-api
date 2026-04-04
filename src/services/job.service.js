@@ -1,4 +1,5 @@
 import { createJob, getJobByCodeRepository, getJobsByFilter } from "../repository/job.repository.js";
+import { getRecruiterByUserId } from "./recruiter.service.js";
 
 export const createJobService = async (supabase, jobInput) => {
   const {
@@ -34,6 +35,12 @@ export const getJobByCode = async (supabase, jobId) => {
     return getJobByCodeRepository(supabase, jobId);
 }
 
+export const getJobByRecruiter = async (supabase, filter, userId) => {
+    const recruiter = await getRecruiterByUserId(supabase, userId)
+    filter = {...filter, recruiterId: recruiter.id}
+    return getJobsByFilter(supabase, filter);
+}
+
 export const getJobListFiltered = async (supabase, filter) => {    
-    return getJobsByFilter(supabase, filter)
+    return getJobsByFilter(supabase, filter);
 }
