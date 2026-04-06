@@ -12,7 +12,17 @@ export const registerController = async (req, res) => {
 
 export const loginController = async (req, res) => {
   try {
-    const result = await authService.login(req.body);
+    const {
+      email,
+      password
+    } = req.query;
+
+    const credentials = {
+      email: email,
+      password: password
+    }
+
+    const result = await authService.login(credentials);
     res.json(result);
   } catch (err) {
     if(err.message?.toLowerCase().includes('invalid login credentials')) {
@@ -21,3 +31,17 @@ export const loginController = async (req, res) => {
     res.status(400).json({ message: 'Falha ao fazer login' });
   }
 };
+
+export const getRecruiterLoggedInController = async (req, res) => {
+  try {
+    const user = req.user;
+    const recruiter = await authService.getRecruiterLoggedIn(user.id);
+
+    return res.json({
+      user,
+      recruiter,
+    });
+  } catch (err) {
+    return res.status(500).json({ message: "Falha ao recuperar dados da conta" });
+  }
+}

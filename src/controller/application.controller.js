@@ -1,4 +1,4 @@
-import { applyToJob } from "../services/application.service.js"
+import { applyToJob, getJobApplications } from "../services/application.service.js"
 
 export const applyToJobController = async(req, res) => {
     try {
@@ -31,5 +31,18 @@ export const applyToJobController = async(req, res) => {
         return res.status(500).json({
             message: "Falha ao se aplicar para a vaga"
         });
+    }
+}
+
+export const getApplicationsByJob = async (req, res) => {
+    try {
+        const { jobCode, page } = req.query;
+
+        const applications = await getJobApplications(req.supabase, page, jobCode);
+    
+        return res.status(200).json(applications);
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: 'Falha ao listar candidaturas' });
     }
 }

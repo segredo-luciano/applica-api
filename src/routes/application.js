@@ -2,7 +2,8 @@ import express from "express";
 import multer from "multer";
 import { supabase } from "../config/supabase.js";
 import { applyToJob } from "../services/application.service.js";
-import { applyToJobController } from "../controller/application.controller.js";
+import { applyToJobController, getApplicationsByJob } from "../controller/application.controller.js";
+import { authMiddleware } from "../middleware/auth.js";
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
@@ -49,5 +50,6 @@ const upload = multer({ storage: multer.memoryStorage() });
 // });
 
 router.post("/", upload.single("cv_file"), applyToJobController)
+router.get('/', authMiddleware, getApplicationsByJob)
 
 export default router;

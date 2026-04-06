@@ -1,5 +1,5 @@
 import { supabaseAdmin } from "../middleware/supabase.js";
-import { insertApplication } from "../repository/application.repository.js";
+import { getJobApplicationsRepository, insertApplication } from "../repository/application.repository.js";
 import { base64ToBuffer, generateFileHash } from "../utils/file.util.js";
 import { APPLICATION_STATUS } from "../enum/applicationStatus.enum.js";
 import { getJobByCode } from "./job.service.js";
@@ -34,6 +34,11 @@ export const applyToJob = async (supabase, { job_code, file }) => {
 
         throw error;
     }
+}
+
+export const getJobApplications = async (supabase, page, jobCode) => {
+    const job = await getJobByCode(supabase, jobCode);
+    return await getJobApplicationsRepository(supabase, page, job?.id)
 }
 
 const uploadCV = async (buffer, mime, job_id) => {

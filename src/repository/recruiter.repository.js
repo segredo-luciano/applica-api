@@ -19,7 +19,8 @@ export const findByAuthUserId = async (authUserId) => {
     .eq("auth_user_id", authUserId)
     .maybeSingle();
 
-  if (error) throw new Error(error.message);
-
+  if (error) {
+    throw new Error(error);
+  }
   return data;
 };
