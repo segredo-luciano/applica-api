@@ -74,6 +74,5 @@ export const login = async ({ email, password }) => {
 
 export const getRecruiterLoggedIn = async ( userId ) => {
     const resp = await recruiterRepository.findByAuthUserId(userId);
-    console.log(resp)
     return resp;
 }

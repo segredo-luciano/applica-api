@@ -3,6 +3,7 @@ import { getJobApplicationsRepository, insertApplication } from "../repository/a
 import { base64ToBuffer, generateFileHash } from "../utils/file.util.js";
 import { APPLICATION_STATUS } from "../enum/applicationStatus.enum.js";
 import { getJobByCode } from "./job.service.js";
+import { application } from "express";
 
 export const applyToJob = async (supabase, { job_code, file }) => {
     const job = await getJobByCode(supabase, job_code)
@@ -38,7 +39,32 @@ export const applyToJob = async (supabase, { job_code, file }) => {
 
 export const getJobApplications = async (supabase, page, jobCode) => {
     const job = await getJobByCode(supabase, jobCode);
-    return await getJobApplicationsRepository(supabase, page, job?.id)
+    const applications = await getJobApplicationsRepository(supabase, page, job?.id)
+
+    const result = await Promise.all(
+        applications.data.map(async (app) => {
+            const { data: signed, error: signError } = await supabaseAdmin.storage
+                .from("cvs")
+                .createSignedUrl(app.cv_url, 3600);
+
+            if (signError) throw new Error(signError.message);
+
+            return {
+                code: app.code,
+                createdAt: app.created_at,
+                status: app.status,
+                viewed: app.viewed,
+                cvUrl: signed.signedUrl                
+            };
+        })
+    );
+
+    return {
+        data: result,
+        total: applications.total,
+        page: applications.page,
+        limit: applications.limit
+    };
 }
 
 const uploadCV = async (buffer, mime, job_id) => {
@@ -56,7 +82,7 @@ const uploadCV = async (buffer, mime, job_id) => {
     .from("cvs")
     .getPublicUrl(fileName);
 
-    return data.publicUrl;
+    return fileName;
 };
 
 const deleteCV = async (cv_url) => {
