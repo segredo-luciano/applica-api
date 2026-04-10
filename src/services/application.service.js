@@ -3,7 +3,6 @@ import { getJobApplicationsRepository, insertApplication } from "../repository/a
 import { base64ToBuffer, generateFileHash } from "../utils/file.util.js";
 import { APPLICATION_STATUS } from "../enum/applicationStatus.enum.js";
 import { getJobByCode } from "./job.service.js";
-import { application } from "express";
 
 export const applyToJob = async (supabase, { job_code, file }) => {
     const job = await getJobByCode(supabase, job_code)
